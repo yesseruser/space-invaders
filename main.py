@@ -36,11 +36,27 @@ invader_velocity_x = 4
 invader_count_x = 6
 invader_count_y = 3
 
+game_over_invader_y = player_y - 24
+
+is_game_won = False
+is_game_over = False
+
 
 def generate_invaders():
     for y in range(invader_count_y):
         for x in range(invader_count_x):
             invaders.append([3 - y, x * (48 + 8), y * (48 + 8)])  # 8 na rozestupy
+
+
+def get_invader_block_size():
+    max_x = 0
+    max_y = 0
+    for invader in invaders:
+        if invader[1] > max_x:
+            max_x = invader[1]
+        if invader[2] > max_y:
+            max_y = invader[2]
+    return (max_x + 48, max_y + 48)
 
 
 # Uvnitř = 0
@@ -79,23 +95,27 @@ while True:
             if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
                 player_velocity_x = 0
 
-    # Hráč
-    player_x += player_velocity_x
-    direction = is_out_of_screen(player_x, player_y, 48)
-    if direction == 1:
-        player_x = 0
-    elif direction == 2:
-        player_x = 800 - 48
+    if not is_game_over:
+        # Hráč
+        player_x += player_velocity_x
+        direction = is_out_of_screen(player_x, player_y, 48)
+        if direction == 1:
+            player_x = 0
+        elif direction == 2:
+            player_x = 800 - 48
 
-    # Invadeři
-    invader_block_x += invader_velocity_x
-    direction = is_out_of_screen(
-        invader_block_x - 8, invader_block_y, invaders[len(invaders) - 1][1] + 48 + 16
-    )
-    # 8 a 16 (= 8 + 8) abychom měli odestup od okraje obrazovky (jako při spawnu)
-    if direction == 1 or direction == 2:
-        invader_block_y += 24
-        invader_velocity_x = -invader_velocity_x
+        # Invadeři
+        invader_block_x += invader_velocity_x
+        direction = is_out_of_screen(
+            invader_block_x - 8, invader_block_y, get_invader_block_size()[0] + 16
+        )
+        # 8 a 16 (= 8 + 8) abychom měli odestup od okraje obrazovky (jako při spawnu)
+        if direction == 1 or direction == 2:
+            invader_block_y += 24
+            invader_velocity_x = -invader_velocity_x
+
+        if invader_block_y + get_invader_block_size()[1] - 24 >= game_over_invader_y:
+            is_game_over = True
 
     window.fill((0, 0, 0))
 
@@ -106,6 +126,10 @@ while True:
             invader_images[invader[0] - 1],
             (invader_block_x + invader[1], invader_block_y + invader[2]),
         )
+
+    pygame.draw.line(
+        window, (255, 255, 255), (0, game_over_invader_y), (800, game_over_invader_y), 4
+    )
 
     pygame.display.flip()
     clock.tick(60)
