@@ -63,6 +63,11 @@ def get_invader_block_size():
     return (max_x + 48, max_y + 48)
 
 
+def is_in_rect(x, y, rect_x, rect_y, rect_width, rect_height):
+    if rect_x <= x <= rect_x + rect_width and rect_y <= y <= rect_y + rect_height:
+        return True
+
+
 # Uvnitř = 0
 # Vlevo = 1
 # Vpravo = 2
@@ -134,7 +139,9 @@ while True:
         )
 
     # Kulky
-    for bullet in bullets:
+    for i in range(len(bullets) - 1, -1, -1):
+        bullet = bullets[i]
+
         pygame.draw.line(
             window,
             (255, 255, 0),
@@ -143,8 +150,24 @@ while True:
             4,
         )
         bullet[1] -= bullet_speed
+
         if bullet[1] < 0:
-            bullets.remove(bullet)
+            del bullets[i]
+            continue  # Až při kolizích
+
+        for j in range(len(invaders) - 1, -1, -1):
+            invader = invaders[j]
+            if is_in_rect(
+                bullet[0],
+                bullet[1],
+                invader_block_x + invader[1],
+                invader_block_y + invader[2],
+                48,
+                48,
+            ):
+                del invaders[j]
+                del bullets[i]
+                break
 
     pygame.draw.line(
         window, (255, 255, 255), (0, game_over_invader_y), (800, game_over_invader_y), 4
