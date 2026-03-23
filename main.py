@@ -51,6 +51,9 @@ bullet_speed = 12
 is_game_won = False
 is_game_over = False
 
+font = pygame.font.SysFont("Arial", 80)
+
+
 def generate_invaders():
     for y in range(invader_count_y):
         for x in range(invader_count_x):
@@ -82,6 +85,17 @@ def get_invader_block_location():
 def is_in_rect(x, y, rect_x, rect_y, rect_width, rect_height):
     if rect_x <= x <= rect_x + rect_width and rect_y <= y <= rect_y + rect_height:
         return True
+
+
+def draw_text(text, color):
+    rendered = font.render(text, True, color)
+    window.blit(
+        rendered,
+        (
+            window.get_width() // 2 - rendered.get_width() // 2,
+            window.get_height() // 2 - rendered.get_height() // 2,
+        ),
+    )
 
 
 # Uvnitř = 0
@@ -196,6 +210,10 @@ while True:
     pygame.draw.line(
         window, (255, 255, 255), (0, game_over_invader_y), (800, game_over_invader_y), 4
     )
+
+    # Game Over
+    if is_game_over:
+        draw_text("Game Over", (255, 0, 0))
 
     pygame.display.flip()
     clock.tick(60)
