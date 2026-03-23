@@ -68,7 +68,12 @@ def get_invader_block_size():
             max_x = invader[1]
         if invader[2] > max_y:
             max_y = invader[2]
-    return (max_x + 48, max_y + 48)
+
+    actual_block_loc = get_invader_block_location()
+    return (
+        max_x - invader_block_x + actual_block_loc[0] + 48,
+        max_y - invader_block_y + actual_block_loc[1] + 48,
+    )
 
 
 def get_invader_block_location():
