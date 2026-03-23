@@ -136,7 +136,7 @@ while True:
             if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
                 player_velocity_x = 0
 
-    if not is_game_over:
+    if not is_game_over and not is_game_won:
         # Hráč
         player_x += player_velocity_x
         direction = is_out_of_screen(player_x, player_y, 48, 48)
@@ -183,6 +183,8 @@ while True:
                 ):
                     del invaders[j]
                     del bullets[i]
+                    if len(invaders) == 0:
+                        is_game_won = True
                     break
 
     window.fill((0, 0, 0))
@@ -214,6 +216,9 @@ while True:
     # Game Over
     if is_game_over:
         draw_text("Game Over", (255, 0, 0))
+
+    if is_game_won:
+        draw_text("Victory", (0, 255, 0))
 
     pygame.display.flip()
     clock.tick(60)
