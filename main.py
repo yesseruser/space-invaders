@@ -128,6 +128,29 @@ while True:
         if invader_block_y + get_invader_block_size()[1] - 24 >= game_over_invader_y:
             is_game_over = True
 
+        # Kulky
+        for i in range(len(bullets) - 1, -1, -1):
+            bullet = bullets[i]
+            bullet[1] -= bullet_speed
+
+            if bullet[1] < 0:
+                del bullets[i]
+                continue  # Až při kolizích
+
+            for j in range(len(invaders) - 1, -1, -1):
+                invader = invaders[j]
+                if is_in_rect(
+                    bullet[0],
+                    bullet[1],
+                    invader_block_x + invader[1],
+                    invader_block_y + invader[2],
+                    48,
+                    48,
+                ):
+                    del invaders[j]
+                    del bullets[i]
+                    break
+
     window.fill((0, 0, 0))
 
     window.blit(player_image, (player_x, player_y))
@@ -149,25 +172,6 @@ while True:
             (bullet[0], bullet[1] - 24),
             4,
         )
-        bullet[1] -= bullet_speed
-
-        if bullet[1] < 0:
-            del bullets[i]
-            continue  # Až při kolizích
-
-        for j in range(len(invaders) - 1, -1, -1):
-            invader = invaders[j]
-            if is_in_rect(
-                bullet[0],
-                bullet[1],
-                invader_block_x + invader[1],
-                invader_block_y + invader[2],
-                48,
-                48,
-            ):
-                del invaders[j]
-                del bullets[i]
-                break
 
     pygame.draw.line(
         window, (255, 255, 255), (0, game_over_invader_y), (800, game_over_invader_y), 4
