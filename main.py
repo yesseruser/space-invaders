@@ -31,8 +31,8 @@ invader_images = [
 invaders = []
 # [health, x, y]
 
-starting_invader_block_x = 8
-starting_invader_block_y = 16
+invader_block_x = 8
+invader_block_y = 16
 
 invader_velocity_x = 4
 
@@ -71,8 +71,8 @@ def get_invader_block_size():
 
     actual_block_loc = get_invader_block_location()
     return (
-        max_x - starting_invader_block_x + actual_block_loc[0] + 48,
-        max_y - starting_invader_block_y + actual_block_loc[1] + 48,
+        max_x - invader_block_x + actual_block_loc[0] + 48,
+        max_y - invader_block_y + actual_block_loc[1] + 48,
     )
 
 
@@ -84,7 +84,7 @@ def get_invader_block_location():
             min_x = invader[1]
         if invader[2] < min_y:
             min_y = invader[2]
-    return (starting_invader_block_x + min_x, starting_invader_block_y + min_y)
+    return (invader_block_x + min_x, invader_block_y + min_y)
 
 
 def is_in_rect(x, y, rect_x, rect_y, rect_width, rect_height):
@@ -151,7 +151,7 @@ while True:
             player_x = 800 - 48
 
         # Invadeři
-        starting_invader_block_x += invader_velocity_x
+        invader_block_x += invader_velocity_x
         print(get_invader_block_location(), get_invader_block_size())
         direction = is_out_of_screen(
             get_invader_block_location()[0] - 8,
@@ -161,13 +161,10 @@ while True:
         )
         # 8 abychom měli odestup od okraje obrazovky (jako při spawnu)
         if direction == 1 or direction == 2:
-            starting_invader_block_y += 24
+            invader_block_y += 24
             invader_velocity_x = -invader_velocity_x
 
-        if (
-            starting_invader_block_y + get_invader_block_size()[1] - 24
-            >= game_over_invader_y
-        ):
+        if invader_block_y + get_invader_block_size()[1] - 24 >= game_over_invader_y:
             is_game_over = True
 
         # Kulky
@@ -184,8 +181,8 @@ while True:
                 if is_in_rect(
                     bullet[0],
                     bullet[1],
-                    starting_invader_block_x + invader[1],
-                    starting_invader_block_y + invader[2],
+                    invader_block_x + invader[1],
+                    invader_block_y + invader[2],
                     48,
                     48,
                 ):
@@ -202,10 +199,7 @@ while True:
     for invader in invaders:
         window.blit(
             invader_images[invader[0] - 1],
-            (
-                starting_invader_block_x + invader[1],
-                starting_invader_block_y + invader[2],
-            ),
+            (invader_block_x + invader[1], invader_block_y + invader[2]),
         )
 
     # Kulky
