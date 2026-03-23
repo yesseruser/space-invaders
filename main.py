@@ -61,6 +61,8 @@ def generate_invaders():
 
 
 def get_invader_block_size():
+    min_x = 99999999
+    min_y = 99999999
     max_x = 0
     max_y = 0
     for invader in invaders:
@@ -68,11 +70,14 @@ def get_invader_block_size():
             max_x = invader[1]
         if invader[2] > max_y:
             max_y = invader[2]
+        if invader[1] < min_x:
+            min_x = invader[1]
+        if invader[2] < min_y:
+            min_y = invader[2]
 
-    actual_block_loc = get_invader_block_location()
     return (
-        max_x - invader_block_x + actual_block_loc[0] + 48,
-        max_y - invader_block_y + actual_block_loc[1] + 48,
+        max_x + 48 - min_x,
+        max_y + 48 - min_y,
     )
 
 
@@ -152,14 +157,13 @@ while True:
 
         # Invadeři
         invader_block_x += invader_velocity_x
-        print(get_invader_block_location(), get_invader_block_size())
         direction = is_out_of_screen(
             get_invader_block_location()[0] - 8,
             get_invader_block_location()[1],
-            get_invader_block_size()[0] + 8,
-            get_invader_block_size()[1] + 8,
+            get_invader_block_size()[0] + 16,
+            get_invader_block_size()[1],
         )
-        # 8 abychom měli odestup od okraje obrazovky (jako při spawnu)
+        # 8 a 16 (16 jelikož odečítáme 8) abychom měli odestup od okraje obrazovky (jako při spawnu)
         if direction == 1 or direction == 2:
             invader_block_y += 24
             invader_velocity_x = -invader_velocity_x
