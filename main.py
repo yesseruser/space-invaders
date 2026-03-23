@@ -7,10 +7,12 @@ import pygame
 # 5. střílení
 # 6. game over / victory
 
+pygame.init()
 window = pygame.display.set_mode((800, 800))
 clock = pygame.time.Clock()
 
-movement_speed = 8
+# Hráč
+player_speed = 8
 
 player_x = 400 - 24  # nejdřív 400, pak - 24 aby bylo uprostřed obrazovky (po scale)
 player_y = 700 - 24
@@ -19,6 +21,7 @@ player_image = pygame.transform.scale(  # nejdřív ukázat že je to malý
     pygame.image.load("invaders/player.png"), (48, 48)
 )
 
+# Invadeři
 invader_images = [
     pygame.transform.scale(pygame.image.load("invaders/invader_1.png"), (48, 48)),
     pygame.transform.scale(pygame.image.load("invaders/invader_2.png"), (48, 48)),
@@ -38,13 +41,15 @@ invader_count_y = 3
 
 game_over_invader_y = player_y - 24
 
-is_game_won = False
-is_game_over = False
 
+# Kulky
 bullets = []
 # [x, y]
 bullet_speed = 12
 
+# Game Over / Victory
+is_game_won = False
+is_game_over = False
 
 def generate_invaders():
     for y in range(invader_count_y):
@@ -63,6 +68,17 @@ def get_invader_block_size():
     return (max_x + 48, max_y + 48)
 
 
+def get_invader_block_location():
+    min_x = 99999999
+    min_y = 99999999
+    for invader in invaders:
+        if invader[1] < min_x:
+            min_x = invader[1]
+        if invader[2] < min_y:
+            min_y = invader[2]
+    return (invader_block_x + min_x, invader_block_y + min_y)
+
+
 def is_in_rect(x, y, rect_x, rect_y, rect_width, rect_height):
     if rect_x <= x <= rect_x + rect_width and rect_y <= y <= rect_y + rect_height:
         return True
@@ -73,14 +89,14 @@ def is_in_rect(x, y, rect_x, rect_y, rect_width, rect_height):
 # Vpravo = 2
 # Nahoře = 3
 # Dole = 4
-def is_out_of_screen(x, y, size):
+def is_out_of_screen(x, y, width, height):
     if x < 0:
         return 1
-    if x + size > 800:
+    if x + width > 800:
         return 2
     if y < 0:
         return 3
-    if y + size > 800:
+    if y + height > 800:
         return 4
     return 0
 
@@ -96,9 +112,9 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 exit()
             if event.key == pygame.K_RIGHT:
-                player_velocity_x = movement_speed
+                player_velocity_x = player_speed
             if event.key == pygame.K_LEFT:
-                player_velocity_x = -movement_speed
+                player_velocity_x = -player_speed
             if event.key == pygame.K_SPACE:
                 bullets.append([player_x + 24, player_y])
 
@@ -109,7 +125,7 @@ while True:
     if not is_game_over:
         # Hráč
         player_x += player_velocity_x
-        direction = is_out_of_screen(player_x, player_y, 48)
+        direction = is_out_of_screen(player_x, player_y, 48, 48)
         if direction == 1:
             player_x = 0
         elif direction == 2:
@@ -117,10 +133,14 @@ while True:
 
         # Invadeři
         invader_block_x += invader_velocity_x
+        print(get_invader_block_location(), get_invader_block_size())
         direction = is_out_of_screen(
-            invader_block_x - 8, invader_block_y, get_invader_block_size()[0] + 16
+            get_invader_block_location()[0] - 8,
+            get_invader_block_location()[1],
+            get_invader_block_size()[0] + 8,
+            get_invader_block_size()[1] + 8,
         )
-        # 8 a 16 (= 8 + 8) abychom měli odestup od okraje obrazovky (jako při spawnu)
+        # 8 abychom měli odestup od okraje obrazovky (jako při spawnu)
         if direction == 1 or direction == 2:
             invader_block_y += 24
             invader_velocity_x = -invader_velocity_x
