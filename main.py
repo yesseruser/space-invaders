@@ -41,6 +41,10 @@ game_over_invader_y = player_y - 24
 is_game_won = False
 is_game_over = False
 
+bullets = []
+# [x, y]
+bullet_speed = 12
+
 
 def generate_invaders():
     for y in range(invader_count_y):
@@ -90,6 +94,8 @@ while True:
                 player_velocity_x = movement_speed
             if event.key == pygame.K_LEFT:
                 player_velocity_x = -movement_speed
+            if event.key == pygame.K_SPACE:
+                bullets.append([player_x + 24, player_y])
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT or event.key == pygame.K_LEFT:
@@ -126,6 +132,19 @@ while True:
             invader_images[invader[0] - 1],
             (invader_block_x + invader[1], invader_block_y + invader[2]),
         )
+
+    # Kulky
+    for bullet in bullets:
+        pygame.draw.line(
+            window,
+            (255, 255, 0),
+            (bullet[0], bullet[1]),
+            (bullet[0], bullet[1] - 24),
+            4,
+        )
+        bullet[1] -= bullet_speed
+        if bullet[1] < 0:
+            bullets.remove(bullet)
 
     pygame.draw.line(
         window, (255, 255, 255), (0, game_over_invader_y), (800, game_over_invader_y), 4
