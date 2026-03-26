@@ -61,8 +61,8 @@ def generate_invaders():
 
 
 def get_invader_block_size():
-    min_x = 99999999
-    min_y = 99999999
+    min_x = float("inf")
+    min_y = float("inf")
     max_x = 0
     max_y = 0
     for invader in invaders:
@@ -82,8 +82,8 @@ def get_invader_block_size():
 
 
 def get_invader_block_location():
-    min_x = 99999999
-    min_y = 99999999
+    min_x = float("inf")
+    min_y = float("inf")
     for invader in invaders:
         if invader[1] < min_x:
             min_x = invader[1]
